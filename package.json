@@ -1,0 +1,19 @@
+{
+  "name": "jenkins-nodejs-first",
+  "version": "1.0.0",
+  "description": "jenkins 的 nodejs 寫法",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dingzhengru/jenkins-nodejs-first.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dingzhengru/jenkins-nodejs-first/issues"
+  },
+  "homepage": "https://github.com/dingzhengru/jenkins-nodejs-first#readme"
+}
