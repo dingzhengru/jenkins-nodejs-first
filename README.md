@@ -1,8 +1,11 @@
-# jenkins-nodejs-first
+# jenkins-nodejs-first <!-- omit in toc -->
 
-jenkins 的 nodejs 寫法
+jenkins 的 nodejs 寫法，列出現有範例
 
-現有範例
+- [Linux](#linux)
+- [Node & Windows (Bash)](#node--windows-bash)
+
+## Linux
 
 development
 
@@ -206,4 +209,35 @@ def SendAlarm( caused = "", git_msg = "" ){
   slackSend (color:'#FF0000', message:"[CMS正式站警報]!!\n\t主因:${caused}\n\t\${git_msg}", channel: 'cms-jenkins通知警報區', tokenCredentialId: 'AAAAAAA')
 }
 
+```
+
+## Node & Windows (Bash)
+
+```
+node('qa-office-auto-tester') {
+    stage('GitSCM') {
+        bat """
+            cd cms-autotest-katalon
+            git pull
+        """
+    }
+    stage('NodeJS') {
+        bat """
+            cd cms-autotest-katalon
+            node -v
+            pnpm install
+            npx cypress info
+        """
+    }
+    stage('充值1元') {
+        bat """
+            cd cms-autotest-katalon
+            pnpm transfer-all-1
+        """
+    }
+}
+
+def SendAlarm( caused = "", git_msg = "" ){
+  slackSend (color:'#FF0000', message:"[CMS封測站警報]!!\n\t主因:${caused}\n\t\${git_msg}", channel: 'cms-jenkins通知警報區', tokenCredentialId: 'AAAAAAA')
+}
 ```
