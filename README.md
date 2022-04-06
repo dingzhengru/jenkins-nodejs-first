@@ -4,6 +4,7 @@ jenkins 的 nodejs 寫法，列出現有範例
 
 - [Linux](#linux)
 - [Node & Windows (Bash)](#node--windows-bash)
+- [prod-rg-crawler-python](#prod-rg-crawler-python)
 
 ## Linux
 
@@ -239,5 +240,62 @@ node('qa-office-auto-tester') {
 
 def SendAlarm( caused = "", git_msg = "" ){
   slackSend (color:'#FF0000', message:"[CMS封測站警報]!!\n\t主因:${caused}\n\t\${git_msg}", channel: 'cms-jenkins通知警報區', tokenCredentialId: 'AAAAAAA')
+}
+```
+
+## prod-rg-crawler-python
+
+```
+import groovy.transform.Field
+import groovy.lang.Binding
+
+@Field def SSH = ""
+node('master') {
+
+  stage('拉取專案') {
+    // SSH & rsync access op tions
+    relay_account = "ec2-user@13.251.158.107"
+    SSH = "ssh -o StrictHostKeyChecking=no -i ~/.ssh/prod_jumper  $relay_account"
+
+    //params.branch
+    git credentialsId: "jenkins_api-at-807372858626", branch: params.branch, url:"https://git-codecommit.ap-southeast-1.amazonaws.com/v1/repos/provider-crawler"
+  }
+
+  stage('準備跳板') {
+    sh("rsync -avpz -e 'ssh -o StrictHostKeyChecking=no -i ~/.ssh/prod_jumper' ./ ${relay_account}:/tmp/jenkins/provider-crawler/")
+  }
+
+  stage('佈署到機器'){
+    sh("$SSH \"rsync -avpz -e 'ssh -o StrictHostKeyChecking=no -i /home/ec2-user/.ssh/deploy_key' /tmp/jenkins/provider-crawler/* ec2-user@13.251.158.106:/home/ec2-user/provider-crawler/\"")
+  }
+}
+```
+
+stage-isc-python-crawler
+
+```
+import groovy.transform.Field
+import groovy.lang.Binding
+
+@Field def SSH = ""
+node('master') {
+
+  stage('拉取專案') {
+    // SSH & rsync access op tions
+    relay_account = "ec2-user@172.31.17.96"
+    SSH = "ssh -o StrictHostKeyChecking=no -i ~/.ssh/bench_mark.key $relay_account"
+
+    //params.branch
+    git credentialsId: "jenkins_api-at-807372858626", branch: params.branch, url:"https://git-codecommit.ap-southeast-1.amazonaws.com/v1/repos/provider-crawler"
+  }
+
+  stage('準備跳板') {
+    sh("rsync -avpz -e 'ssh -o StrictHostKeyChecking=no -i ~/.ssh/bench_mark.key' ./ ${relay_account}:/tmp/jenkins/provider-crawler/")
+  }
+
+  stage('佈署到機器'){
+    sh("$SSH \"rsync -avpz -e 'ssh -o StrictHostKeyChecking=no -i /home/ec2-user/.ssh/master.private.rsa' /tmp/jenkins/provider-crawler/* ec2-user@172.31.21.198:/home/ec2-user/provider-crawler/\"")
+  }
+
 }
 ```
